@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+import subprocess
+import simplejson as json
+
+cmd = subprocess.Popen('prospector --zero-exit --output-format json --uses django celery flask --full-pep8 /code', shell=True, stdout=subprocess.PIPE)
+
+text = cmd.communicate()[0]
+
+output = json.loads(text)
+
+for parsed in output['messages']:
+    print {
+      "type": 'issue',
+      "check_name": parsed['code'],
+      "description": parsed['message'],
+      "categories": ["Bug Risk"],
+      "location": parsed['location']
+    }
+
+
+
+
+
+
