@@ -12,4 +12,4 @@ USER app
 
 COPY . /usr/src/app
 
-CMD ["/usr/src/app/bin/codeclimate-django"]
+CMD ["/usr/src/app/bin/codeclimate-prospector"]
