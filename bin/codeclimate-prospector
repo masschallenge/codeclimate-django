@@ -15,7 +15,7 @@ for parsed in output['messages']:
       "description": parsed['message'],
       "categories": ["Bug Risk"],
       "location": parsed['location']
-    })
+    }) + "\x00"
 
 
 
