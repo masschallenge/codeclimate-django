@@ -2,11 +2,28 @@
 
 import subprocess
 import simplejson as json
-import commands
 
-cmd = subprocess.Popen('prospector --zero-exit --output-format json --uses django celery flask --full-pep8 -p /code', shell=True, stdout=subprocess.PIPE)
+config_json = {}
+
+with open('/config.json', 'rb') as fhandle:
+    config_json = json.load(fhandle)
+
+config_part = ""
+
+config_file = config_json.get('config')
+
+if config_file:
+    config_part = "--profile %s" % config_file
+
+prospector_command = 'prospector --zero-exit %s --output-format json -p /code' % config_part
+
+cmd = subprocess.Popen(
+    prospector_command,
+    shell=True,
+    stdout=subprocess.PIPE)
 text = cmd.communicate()[0]
 output = json.loads(text)
+
 
 for parsed in output['messages']:
     print json.dumps({
@@ -16,9 +33,4 @@ for parsed in output['messages']:
       "categories": ["Bug Risk"],
       "location": parsed['location']
     }) + "\x00"
-
-
-
-
-
 
