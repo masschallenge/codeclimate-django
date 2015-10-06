@@ -14,6 +14,8 @@ config_file = config_json.get('config')
 
 if config_file:
     config_part = "--profile %s" % config_file
+else:
+    config_part = "--uses django celery flask --with-tool mccabe --with-tool dodgy --with-tool pyflakes --with-tool pep257 --with-tool pep8 --with-tool pylint"
 
 prospector_command = 'prospector --zero-exit %s --output-format json -p /code' % config_part
 
@@ -21,9 +23,10 @@ cmd = subprocess.Popen(
     prospector_command,
     shell=True,
     stdout=subprocess.PIPE)
-text = cmd.communicate()[0]
-output = json.loads(text)
 
+text = cmd.communicate()[0]
+
+output = json.loads(text)
 
 for parsed in output['messages']:
     print json.dumps({
