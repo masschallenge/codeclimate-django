@@ -9,31 +9,36 @@ with open('/config.json', 'rb') as fhandle:
     config_json = json.load(fhandle)
 
 config_part = ""
-
 config_file = config_json.get('config')
+exclude_dirs = config_json.get('exclude_paths')
+
 
 if config_file:
-    config_part = "--profile %s" % config_file
+    config_part = "--profile-path /code --profile \"/code/%s\"" % config_file
 else:
-    config_part = "--uses django celery flask --with-tool mccabe --with-tool dodgy --with-tool pyflakes --with-tool pep257 --with-tool pep8 --with-tool pylint"
+    config_part = "--uses django celery flask --with-tool mccabe --with-tool frosted --with-tool pyroma  --with-tool dodgy --with-tool pyflakes --with-tool pep257 --with-tool pep8 --with-tool pylint --with-tool vulture"
 
-prospector_command = 'prospector --zero-exit %s --output-format json -p /code' % config_part
+prospector_command = 'PYTHONPATH=${PYTHONPATH}:/code prospector  --messages-only --zero-exit %s --output-format json -p /code' % config_part
+
 
 cmd = subprocess.Popen(
     prospector_command,
     shell=True,
+    stderr=subprocess.PIPE,
     stdout=subprocess.PIPE)
 
 text = cmd.communicate()[0]
 
-output = json.loads(text)
+try:
+    output = json.loads(text)
 
-for parsed in output['messages']:
-    print json.dumps({
-      "type": 'issue',
-      "check_name": parsed['code'],
-      "description": parsed['message'],
-      "categories": ["Bug Risk"],
-      "location": parsed['location']
-    }) + "\x00"
-
+    for parsed in output['messages']:
+        print json.dumps({
+          "type": 'issue',
+          "check_name": parsed['code'],
+          "description": parsed['message'],
+          "categories": ["Bug Risk"],
+          "location": parsed['location']
+        }) + "\x00"
+except:
+    print text
