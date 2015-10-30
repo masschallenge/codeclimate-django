@@ -62,7 +62,7 @@ for parsed in output['messages']:
           parsed['source'] == 'frosted'):
         severity_code = parsed['code']
     if severity_code:
-        severity_type = severity_types.get(severity_code.upper(), 'normal')
+        severity_type = severity_types.get(severity_code[0].upper(), 'normal')
     print json.dumps({
       "type": 'issue',
       'severity': severity_type,
