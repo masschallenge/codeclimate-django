@@ -7,17 +7,22 @@ config_json = {}
 
 pylint_codes = {}
 
-severity_types =  {
-  'I': 'info', # info
-  'C': 'normal', # convention
-  'R': 'normal', # refactor
-  'W': 'normal', # warning
-  'E': 'critical', # error
-  'F': 'critical', # fatal
-  }
+remediation_multiplier = {}
+
+severity_types = {
+  'I': 'info',  # info
+  'C': 'normal',  # convention
+  'R': 'normal',  # refactor
+  'W': 'normal',  # warning
+  'E': 'critical',  # error
+  'F': 'critical'  # fatal
+}
 
 with open('/usr/src/app/config/pylint-codes.json', 'rb') as fhandle:
     pylint_codes = json.load(fhandle)
+
+with open('/usr/src/app/config/pylint-points.json', 'rb') as fhandle:
+    remediation_multiplier = json.load(fhandle)
 
 
 def get_config_part():
@@ -51,9 +56,11 @@ output = json.loads(text)
 
 for parsed in output['messages']:
     severity_code = ''
+    remediation_points = 50000
     severity_type = 'normal'
     if parsed['source'] == 'pylint':
         severity_code = pylint_codes.get(parsed['code'])
+        remediation_points *= remediation_multiplier.get(parsed['code'], 1)
     elif (
           parsed['source'] == 'pep8') or (
           parsed['source'] == 'pep257') or (
@@ -68,6 +75,7 @@ for parsed in output['messages']:
       'severity': severity_type,
       "check_name": parsed['code'],
       "description": parsed['message'],
+      "remediation_points": remediation_points,
       "categories": ["Bug Risk"],
       "location": parsed['location']
     }) + "\x00"
