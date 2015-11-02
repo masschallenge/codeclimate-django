@@ -60,7 +60,7 @@ for parsed in output['messages']:
     severity_type = 'normal'
     if parsed['source'] == 'pylint':
         severity_code = pylint_codes.get(parsed['code'])
-        remediation_points *= remediation_multiplier.get(parsed['code'], 1)
+        remediation_points *= remediation_multiplier.get(severity_code, 1)
     elif (
           parsed['source'] == 'pep8') or (
           parsed['source'] == 'pep257') or (
@@ -70,6 +70,7 @@ for parsed in output['messages']:
         severity_code = parsed['code']
     if severity_code:
         severity_type = severity_types.get(severity_code[0].upper(), 'normal')
+
     print json.dumps({
       "type": 'issue',
       'severity': severity_type,
