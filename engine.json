@@ -3,7 +3,7 @@
   "description": "An engine for codeclimate that lints your code using prospector. Please see the readme for usage.",
   "maintainer": {
     "name": "MassChallenge Inc",
-    "email": "developers@masschallenge.org",
+    "email": "engineering@masschallenge.org",
   },
   "version": "8554e",
   "spec_version": "0.0.1",
